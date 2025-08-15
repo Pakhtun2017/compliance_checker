@@ -1,0 +1,39 @@
+replicaCount: 1
+
+image:
+  repository: 395349209468.dkr.ecr.us-east-1.amazonaws.com/compliance-dashboard
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: LoadBalancer
+  port: 80
+
+env:
+  S3_BUCKET: compliance-checker-bucket-1e0b124b
+  DASHBOARD_PASSWORD: "admin"
+  FLASK_SECRET_KEY: "supersecretkey"
+
+serviceAccount:
+  create: true
+  name: compliance-sa
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::395349209468:role/flask-dashboard-irsa
+
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
